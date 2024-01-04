@@ -36,7 +36,7 @@ router.post('/', authenticate, async (req, res) => {
     const { title, content } = req.body;
 
     if (!title || !content) {
-        res.status(300).json({ message: "Notes must contain a title and content." });
+        return res.status(300).json({ message: "Notes must contain a title and content." });
     }
 
     try {
