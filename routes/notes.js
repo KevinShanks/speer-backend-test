@@ -50,16 +50,34 @@ router.post('/', authenticate, async (req, res) => {
 });
 
 // update note for user
-router.put('/:id', authenticate, (req, res) => {
+router.put('/:id', authenticate, async (req, res) => {
     const { title, content } = req.body;
     const _id = req.params.id;
     const user_id = req.user.id;
+    const query = { _id, user_id };
+    try {
+        const updatedNote = await Note.findOneAndUpdate(query, { title, content });
+        res.status(201).json({ message: "Note Updated" });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+    
 });
 
 // delete note for user
-router.delete('/:id', authenticate, (req, res) => {
+router.delete('/:id', authenticate, async (req, res) => {
     const _id = req.params.id;
     const user_id = req.user.id;
+
+    try {
+        const deletedNote = await Note.findOneAndDelete({ user_id, _id });
+        if (!deletedNote) {
+            return res.status(400).json({ message: `No note found with id ${_id}` });
+        }
+        res.status(201).json({ message: "Note Deleted"});
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
 });
 
 // share note for user
